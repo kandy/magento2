@@ -176,8 +176,7 @@ class Translate implements \Magento\Framework\TranslateInterface
         $this->directory = $filesystem->getDirectoryRead(DirectoryList::ROOT);
         $this->_csvParser = $csvParser;
         $this->packDictionary = $packDictionary;
-        $this->fileDriver = $fileDriver
-            ?? ObjectManager::getInstance()->get(File::class);
+        $this->fileDriver = $fileDriver ?? ObjectManager::getInstance()->get(File::class);
 
         $this->_config = [
             self::CONFIG_AREA_KEY => null,
@@ -201,16 +200,15 @@ class Translate implements \Magento\Framework\TranslateInterface
         if ($area === null) {
             $area = $this->_appState->getAreaCode();
         }
-        $this->setConfig(
-            [
+        $this->setConfig([
                 self::CONFIG_AREA_KEY => $area,
-            ]
-        );
+            ]);
 
         if (!$forceReload) {
             $data = $this->_loadCache();
             if (false !== $data) {
                 $this->_data = $data;
+
                 return $this;
             }
         }
@@ -230,7 +228,7 @@ class Translate implements \Magento\Framework\TranslateInterface
     /**
      * Initialize configuration
      *
-     * @param   array $config
+     * @param array $config
      * @return  $this
      */
     protected function setConfig($config)
@@ -248,6 +246,7 @@ class Translate implements \Magento\Framework\TranslateInterface
         if (!isset($this->_config[self::CONFIG_MODULE_KEY])) {
             $this->_config[self::CONFIG_MODULE_KEY] = $this->getControllerModuleName();
         }
+
         return $this;
     }
 
@@ -259,13 +258,14 @@ class Translate implements \Magento\Framework\TranslateInterface
     protected function getScope()
     {
         $scope = ($this->getConfig(self::CONFIG_AREA_KEY) === 'adminhtml') ? 'admin' : null;
+
         return $this->_scopeResolver->getScope($scope)->getCode();
     }
 
     /**
      * Retrieve config value by key
      *
-     * @param   string $key
+     * @param string $key
      * @return  mixed
      */
     protected function getConfig($key)
@@ -273,6 +273,7 @@ class Translate implements \Magento\Framework\TranslateInterface
         if (isset($this->_config[$key])) {
             return $this->_config[$key];
         }
+
         return null;
     }
 
@@ -298,6 +299,7 @@ class Translate implements \Magento\Framework\TranslateInterface
 
         $this->loadModuleTranslationByModulesList($allModulesExceptCurrent);
         $this->loadModuleTranslationByModulesList([$currentModule]);
+
         return $this;
     }
 
@@ -313,6 +315,7 @@ class Translate implements \Magento\Framework\TranslateInterface
             $moduleFilePath = $this->_getModuleTranslationFile($module, $this->getLocale());
             $this->_addData($this->_getFileData($moduleFilePath));
         }
+
         return $this;
     }
 
@@ -332,13 +335,14 @@ class Translate implements \Magento\Framework\TranslateInterface
                 continue;
             }
 
-            $key = is_array($key) ? $key : (string) $key;
-            $value = is_array($value) ? $value : (string) $value;
+            $key = is_array($key) ? $key : (string)$key;
+            $value = is_array($value) ? $value : (string)$value;
             $key = str_replace('""', '"', $key);
             $value = str_replace('""', '"', $value);
 
             $this->_data[$key] = $value;
         }
+
         return $this;
     }
 
@@ -381,6 +385,7 @@ class Translate implements \Magento\Framework\TranslateInterface
     {
         $data = $this->_translateResource->getTranslationArray(null, $this->getLocale());
         $this->_addData(array_map('htmlspecialchars_decode', $data));
+
         return $this;
     }
 
@@ -394,7 +399,8 @@ class Translate implements \Magento\Framework\TranslateInterface
     protected function _getModuleTranslationFile($moduleName, $locale)
     {
         $file = $this->_modulesReader->getModuleDir(Module\Dir::MODULE_I18N_DIR, $moduleName);
-        $file .= '/' . $locale . '.csv';
+        $file .= '/'.$locale.'.csv';
+
         return $file;
     }
 
@@ -408,7 +414,7 @@ class Translate implements \Magento\Framework\TranslateInterface
     private function getThemeTranslationFileName(?string $locale, array $config): ?string
     {
         $fileName = $this->_viewFileSystem->getLocaleFileName(
-            'i18n' . '/' . $locale . '.csv',
+            'i18n'.'/'.$locale.'.csv',
             $config
         );
 
@@ -470,7 +476,7 @@ class Translate implements \Magento\Framework\TranslateInterface
     protected function _getThemeTranslationFile($locale)
     {
         return $this->_viewFileSystem->getLocaleFileName(
-            'i18n' . '/' . $locale . '.csv',
+            'i18n'.'/'.$locale.'.csv',
             $this->_config
         );
     }
@@ -488,6 +494,7 @@ class Translate implements \Magento\Framework\TranslateInterface
             $this->_csvParser->setDelimiter(',');
             $data = $this->_csvParser->getDataPairs($file);
         }
+
         return $data;
     }
 
@@ -501,6 +508,7 @@ class Translate implements \Magento\Framework\TranslateInterface
         if ($this->_data === null) {
             return [];
         }
+
         return $this->_data;
     }
 
@@ -514,6 +522,7 @@ class Translate implements \Magento\Framework\TranslateInterface
         if (null === $this->_localeCode) {
             $this->_localeCode = $this->_locale->getLocale();
         }
+
         return $this->_localeCode;
     }
 
@@ -527,6 +536,7 @@ class Translate implements \Magento\Framework\TranslateInterface
     {
         $this->_localeCode = $locale;
         $this->_config[self::CONFIG_LOCALE_KEY] = $locale;
+
         return $this;
     }
 
@@ -539,9 +549,10 @@ class Translate implements \Magento\Framework\TranslateInterface
     {
         $theme = $this->request->getParam(self::CONFIG_THEME_KEY);
         if (empty($theme)) {
-            return self::CONFIG_THEME_KEY . $this->getConfig(self::CONFIG_THEME_KEY);
+            return self::CONFIG_THEME_KEY.$this->getConfig(self::CONFIG_THEME_KEY);
         }
-        return self::CONFIG_THEME_KEY . $theme['theme_title'];
+
+        return self::CONFIG_THEME_KEY.$theme['theme_title'];
     }
 
     /**
@@ -552,13 +563,14 @@ class Translate implements \Magento\Framework\TranslateInterface
     protected function getCacheId()
     {
         $_cacheId = \Magento\Framework\App\Cache\Type\Translate::TYPE_IDENTIFIER;
-        $_cacheId .= '_' . $this->_config[self::CONFIG_LOCALE_KEY];
-        $_cacheId .= '_' . $this->_config[self::CONFIG_AREA_KEY];
-        $_cacheId .= '_' . $this->_config[self::CONFIG_SCOPE_KEY];
-        $_cacheId .= '_' . $this->_config[self::CONFIG_THEME_KEY];
-        $_cacheId .= '_' . $this->_config[self::CONFIG_MODULE_KEY];
+        $_cacheId .= '_'.$this->_config[self::CONFIG_LOCALE_KEY];
+        $_cacheId .= '_'.$this->_config[self::CONFIG_AREA_KEY];
+        $_cacheId .= '_'.$this->_config[self::CONFIG_SCOPE_KEY];
+        $_cacheId .= '_'.$this->_config[self::CONFIG_THEME_KEY];
+        $_cacheId .= '_'.$this->_config[self::CONFIG_MODULE_KEY];
 
         $this->_cacheId = $_cacheId;
+
         return $_cacheId;
     }
 
@@ -573,6 +585,7 @@ class Translate implements \Magento\Framework\TranslateInterface
         if ($data) {
             $data = $this->getSerializer()->unserialize($data);
         }
+
         return $data;
     }
 
@@ -584,6 +597,7 @@ class Translate implements \Magento\Framework\TranslateInterface
     protected function _saveCache()
     {
         $this->_cache->save($this->getSerializer()->serialize($this->getData()), $this->getCacheId(), [], false);
+
         return $this;
     }
 
@@ -596,9 +610,22 @@ class Translate implements \Magento\Framework\TranslateInterface
     private function getSerializer()
     {
         if ($this->serializer === null) {
-            $this->serializer = \Magento\Framework\App\ObjectManager::getInstance()
-                ->get(Serialize\SerializerInterface::class);
+            $this->serializer = \Magento\Framework\App\ObjectManager::getInstance()->get(
+                    Serialize\SerializerInterface::class
+                );
         }
+
         return $this->serializer;
+    }
+
+    /**
+     * Disable show internals with var_dump
+     *
+     * @see https://www.php.net/manual/en/language.oop5.magic.php#object.debuginfo
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        return [];
     }
 }

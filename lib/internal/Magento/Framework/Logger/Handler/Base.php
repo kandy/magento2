@@ -86,4 +86,9 @@ class Base extends StreamHandler
 
         parent::write($record);
     }
+
+    public function __debugInfo()
+    {
+        return ['fileName' => $this->fileName];
+    }
 }

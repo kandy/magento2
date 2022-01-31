@@ -61,4 +61,9 @@ class Config extends TagScope implements CacheInterface
     {
         return self::CACHE_TAG;
     }
+
+    public function __debugInfo()
+    {
+        return [];
+    }
 }

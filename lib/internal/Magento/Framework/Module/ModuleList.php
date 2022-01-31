@@ -144,4 +144,11 @@ class ModuleList implements ModuleListInterface
             $this->configData = $this->config->get(ConfigOptionsListConstants::KEY_MODULES);
         }
     }
+
+    public function __debugInfo(): ?array
+    {
+        return [];
+    }
+
+
 }

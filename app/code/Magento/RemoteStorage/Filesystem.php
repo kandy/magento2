@@ -129,4 +129,9 @@ class Filesystem extends BaseFilesystem implements FilesystemInterface
     {
         return $this->directoryCodes;
     }
+
+    public function __debugInfo()
+    {
+        return [];
+    }
 }

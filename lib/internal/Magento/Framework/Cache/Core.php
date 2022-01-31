@@ -177,4 +177,9 @@ class Core extends \Zend_Cache_Core
 
         return $backendObject;
     }
+
+    public function __debugInfo()
+    {
+        return [];
+    }
 }

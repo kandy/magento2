@@ -106,4 +106,9 @@ class Bare implements \Magento\Framework\Cache\FrontendInterface
     {
         return $this->_getFrontend()->getLowLevelFrontend();
     }
+
+    public function __debugInfo()
+    {
+        return [];
+    }
 }
