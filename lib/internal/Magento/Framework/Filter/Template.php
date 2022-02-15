@@ -194,7 +194,7 @@ class Template implements \Zend_Filter_Interface
                 }
             }
         }
-        return $this->afterFilter($value);
+        return str_replace('{', '&#7b;', $this->afterFilter($value));
     }
 
     /**
