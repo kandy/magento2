@@ -430,7 +430,7 @@ class Filter extends Template
             $method = 'toHtml';
         }
         $value = $block->{$method}();
-        $value = str_replace('{{', '&#7b;{', $value);
+        $value = str_replace('{', '&#7b;', $value);
         return $value;
     }
 
@@ -455,7 +455,7 @@ class Filter extends Template
             $value = $this->emulateAreaCallback();
         }
 
-        $value = str_replace('{{', '&#7b;{', $value);
+        $value = str_replace('{', '&#7b;', $value);
         return $value;
     }
 
@@ -526,7 +526,7 @@ class Filter extends Template
     {
         $params = $this->getParameters($construction[2]);
         $value = $this->_assetRepo->getUrlWithParams($params['url'], $params);
-        $value = str_replace('{{', '&#7b;{', $value);
+        $value = str_replace('{', '&#7b;', $value);
         return $value;
     }
 
@@ -542,7 +542,7 @@ class Filter extends Template
         $params = $this->getParameters(html_entity_decode($construction[2], ENT_QUOTES));
         $value = $this->_storeManager->getStore()
                 ->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . $params['url'];
-        $value = str_replace('{{', '&#7b;{', $value);
+        $value = str_replace('{', '&#7b;', $value);
         return $value;
     }
 
@@ -589,7 +589,7 @@ class Filter extends Template
         $params['_escape_params'] = $this->_storeManager->getStore()->getCode();
 
         $value = $this->urlModel->getUrl($path, $params);
-        $value = str_replace('{{', '&#7b;{', $value);
+        $value = str_replace('{', '&#7b;', $value);
         return $value;
     }
 
@@ -629,7 +629,7 @@ class Filter extends Template
 
         $text = __($text, $params)->render();
         $result =  $this->applyModifiers($text, $modifiers);
-        $result = str_replace('{{', '&#7b;{', $result);
+        $result = str_replace('{', '&#7b;', $result);
         return $result;
     }
 
@@ -796,7 +796,7 @@ class Filter extends Template
             }
             return $params['http'];
         }
-        $value = str_replace('{{', '&#7b;{', $protocol);
+        $value = str_replace('{', '&#7b;', $protocol);
         return $value;
     }
 
@@ -860,7 +860,7 @@ class Filter extends Template
                     $configValue;
             }
         }
-        $configValue = str_replace('{{', '&#7b;{', $configValue);
+        $configValue = str_replace('{', '&#7b;', $configValue);
         return $configValue;
     }
 
@@ -902,7 +902,7 @@ class Filter extends Template
                 $customVarValue = $value;
             }
         }
-        $value = str_replace('{{', '&#7b;{', $customVarValue);
+        $value = str_replace('{', '&#7b;', $customVarValue);
         return $value;
     }
 

@@ -25,7 +25,7 @@ class Filter extends \Magento\Email\Model\Template\Filter
         }
 
         $value = $this->_storeManager->getStore()->getBaseMediaDir() . '/' . $params['url'];
-        $value = str_replace('{{', '&#7b;{', $value);
+        $value = str_replace('{', '&#7b;', $value);
         return $value;
     }
 }

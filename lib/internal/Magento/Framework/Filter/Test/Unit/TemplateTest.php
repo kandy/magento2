@@ -127,7 +127,7 @@ TEMPLATE;
 <ul>
 {{for in order.all_visible_items}}
     <li>
-         name: , lastname: , age: 
+         name: , lastname: , age:
     </li>
 {{/for}}
 </ul>
@@ -137,14 +137,14 @@ TEMPLATE;
                 $template = <<<TEMPLATE
 <ul>
 {{for in order.all_visible_items}}
-    
+
 {{/for}}
 </ul>
 TEMPLATE;
                 $expected = <<<TEMPLATE
 <ul>
 {{for in order.all_visible_items}}
-    
+
 {{/for}}
 </ul>
 TEMPLATE;
@@ -153,14 +153,14 @@ TEMPLATE;
                 $template = <<<TEMPLATE
 <ul>
 {{for in }}
-    
+
 {{/for}}
 </ul>
 TEMPLATE;
                 $expected = <<<TEMPLATE
 <ul>
 {{for in }}
-    
+
 {{/for}}
 </ul>
 TEMPLATE;
@@ -178,17 +178,17 @@ TEMPLATE;
 TEMPLATE;
                 $expected = <<<TEMPLATE
 <ul>
-    
+
     <li>
         index: 0 sku: ABC123
         name: Product ABC price: 123 quantity: 2
     </li>
-    
+
     <li>
         index: 1 sku: DOREMI
         name: Product DOREMI price: 456 quantity: 1
     </li>
-    
+
 </ul>
 TEMPLATE;
         }

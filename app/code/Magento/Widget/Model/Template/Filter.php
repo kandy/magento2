@@ -154,7 +154,7 @@ class Filter extends \Magento\Cms\Model\Template\Filter
         }
 
         $value = $widget->toHtml();
-        $value = str_replace('{{', '&#7b;{', $value);
+        $value = str_replace('{', '&#7b;', $value);
         return $value;
     }
 
@@ -181,7 +181,7 @@ class Filter extends \Magento\Cms\Model\Template\Filter
         $params = $this->getParameters(html_entity_decode($construction[2], ENT_QUOTES));
         $value = $this->_storeManager->getStore()
                 ->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . $params['url'];
-        $value = str_replace('{{', '&#7b;{', $value);
+        $value = str_replace('{', '&#7b;', $value);
         return $value;
     }
 }
