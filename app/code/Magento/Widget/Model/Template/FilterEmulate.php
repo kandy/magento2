@@ -24,7 +24,10 @@ class FilterEmulate extends Filter
      */
     public function widgetDirective($construction)
     {
-        return $this->_appState->emulateAreaCode('frontend', [$this, 'generateWidget'], [$construction]);
+        $value = $this->_appState->emulateAreaCode('frontend', [$this, 'generateWidget'], [$construction]);
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
+
     }
 
     /**

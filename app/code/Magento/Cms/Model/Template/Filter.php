@@ -24,6 +24,8 @@ class Filter extends \Magento\Email\Model\Template\Filter
             throw new \InvalidArgumentException('Image path must be absolute and not include URLs');
         }
 
-        return $this->_storeManager->getStore()->getBaseMediaDir() . '/' . $params['url'];
+        $value = $this->_storeManager->getStore()->getBaseMediaDir() . '/' . $params['url'];
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
     }
 }

@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Magento\Framework\Filter\VariableResolver;
 
+use Magento\Framework\Data\Collection;
 use Magento\Framework\DataObject;
 use Magento\Framework\Filter\Template;
 use Magento\Framework\Filter\Template\Tokenizer\VariableFactory;
@@ -105,16 +106,24 @@ class LegacyResolver implements VariableResolverInterface
      */
     private function handlePropertyAccess(int $i, array &$stackArgs): void
     {
-        if (is_array($stackArgs[$i - 1]['variable'])) {
-            $stackArgs[$i]['variable'] = $stackArgs[$i - 1]['variable'][$stackArgs[$i]['name']];
+        $targetObject = $stackArgs[$i - 1]['variable'];
+        $variableName = $stackArgs[$i]['name'];
+        if (is_array($targetObject)) {
+            $stackArgs[$i]['variable'] = $targetObject[$variableName];
         } else {
-            $caller = 'get' . $this->stringUtils->upperCaseWords($stackArgs[$i]['name'], '_', '');
-            $stackArgs[$i]['variable'] = method_exists(
-                $stackArgs[$i - 1]['variable'],
-                $caller
-            ) ? $stackArgs[$i - 1]['variable']->{$caller}() : $stackArgs[$i - 1]['variable']->getData(
-                $stackArgs[$i]['name']
-            );
+            $caller = 'get' . $this->stringUtils->upperCaseWords($variableName, '_', '');
+            if (method_exists($targetObject, $caller)){
+                $value = $targetObject->{$caller}();
+            } else {
+                $value = $targetObject->getData($variableName);
+            }
+            if ($stackArgs[0]['name'] == 'this' && !is_scalar($value)) {
+                throw new \Exception('Invalid returned type for $this' . $variableName);
+            }
+            if (!is_scalar($value) && !($value instanceof DataObject) && !($value instanceof Collection)){
+                throw new \Exception('Invalid returned type for ' . $variableName);
+            }
+            $stackArgs[$i]['variable'] = $value;
         }
     }
 
@@ -132,8 +141,10 @@ class LegacyResolver implements VariableResolverInterface
         int $i,
         array &$stackArgs
     ): void {
-        if (method_exists($stackArgs[$i - 1]['variable'], $stackArgs[$i]['name'])
-            || substr($stackArgs[$i]['name'], 0, 3) == 'get'
+        $methodName = $stackArgs[$i]['name'];
+        if ((substr_compare($methodName, '_', 0,1) !==0
+                && method_exists($stackArgs[$i - 1]['variable'], $methodName))
+            || substr($methodName, 0, 3) == 'get'
         ) {
             $stackArgs[$i]['args'] = $this->getStackArgs(
                 $stackArgs[$i]['args'],
@@ -141,10 +152,17 @@ class LegacyResolver implements VariableResolverInterface
                 $templateVariables
             );
 
-            $stackArgs[$i]['variable'] = call_user_func_array(
-                [$stackArgs[$i - 1]['variable'], $stackArgs[$i]['name']],
+            $value = call_user_func_array(
+                [$stackArgs[$i - 1]['variable'], $methodName],
                 $stackArgs[$i]['args']
             );
+            if ($stackArgs[0]['name'] == 'this' && !is_scalar($value)) {
+                throw new \Exception('Invalid returned type for $this' . $methodName);
+            }
+            if (!is_scalar($value) && !($value instanceof DataObject) && !($value instanceof Collection)){
+                throw new \Exception('Invalid returned type for ' . $methodName);
+            }
+            $stackArgs[$i]['variable'] = $value;
         }
     }
 
@@ -162,7 +180,14 @@ class LegacyResolver implements VariableResolverInterface
         $method = $stackArgs[$i]['name'];
         if ($this->isMethodCallable($object, $method)) {
             $args = $this->getStackArgs($stackArgs[$i]['args'], $filter, $templateVariables);
-            $stackArgs[$i]['variable'] = call_user_func_array([$object, $method], $args);
+            $value = call_user_func_array([$object, $method], $args);
+            if ($stackArgs[0]['name'] == 'this' && !is_scalar($value)) {
+                throw new \Exception('Invalid returned type for $this' . $method);
+            }
+            if (!is_scalar($value) && !($value instanceof DataObject) && !($value instanceof Collection)){
+                throw new \Exception('Invalid returned type for ' . $method);
+            }
+            $stackArgs[$i]['variable'] = $value;
         }
     }
 
@@ -178,6 +203,7 @@ class LegacyResolver implements VariableResolverInterface
         if (method_exists($object, $method)
             && substr($method, 0, 3) !== 'set'
             && $method !== '___callParent'
+            && substr_compare($method, '_', 0,1) !==0
         ) {
             return true;
         }

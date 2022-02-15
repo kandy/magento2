@@ -153,7 +153,9 @@ class Filter extends \Magento\Cms\Model\Template\Filter
             return '';
         }
 
-        return $widget->toHtml();
+        $value = $widget->toHtml();
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
     }
 
     /**
@@ -177,7 +179,9 @@ class Filter extends \Magento\Cms\Model\Template\Filter
     {
         // phpcs:disable Magento2.Functions.DiscouragedFunction
         $params = $this->getParameters(html_entity_decode($construction[2], ENT_QUOTES));
-        return $this->_storeManager->getStore()
-            ->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . $params['url'];
+        $value = $this->_storeManager->getStore()
+                ->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . $params['url'];
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
     }
 }

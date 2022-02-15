@@ -194,7 +194,6 @@ class Template implements \Zend_Filter_Interface
                 }
             }
         }
-
         return $this->afterFilter($value);
     }
 

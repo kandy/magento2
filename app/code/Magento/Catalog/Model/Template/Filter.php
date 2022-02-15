@@ -116,7 +116,7 @@ class Filter extends \Magento\Framework\Filter\Template
          * but instead just create a different type of directive, for example {{baseUrl path="favicon.ico"}}
          */
         $url = $this->_assetRepo->getUrlWithParams($params['url'], $params);
-
+        $url = str_replace('{{', '&#7b;{', $url);
         return $url;
     }
 
@@ -131,8 +131,10 @@ class Filter extends \Magento\Framework\Filter\Template
     {
         // phpcs:disable Magento2.Functions.DiscouragedFunction
         $params = $this->getParameters(html_entity_decode($construction[2], ENT_QUOTES));
-        return $this->_storeManager->getStore()
+        $value = $this->_storeManager->getStore()
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA) . $params['url'];
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
     }
 
     /**
@@ -171,6 +173,8 @@ class Filter extends \Magento\Framework\Filter\Template
             unset($params['url']);
         }
 
-        return $this->_storeManager->getStore()->getUrl($path, $params);
+        $value = $this->_storeManager->getStore()->getUrl($path, $params);
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
     }
 }

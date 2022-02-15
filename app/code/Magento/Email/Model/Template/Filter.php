@@ -429,7 +429,9 @@ class Filter extends Template
         ) {
             $method = 'toHtml';
         }
-        return $block->{$method}();
+        $value = $block->{$method}();
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
     }
 
     /**
@@ -445,13 +447,16 @@ class Filter extends Template
             $this->_directiveParams['area'] = Area::AREA_FRONTEND;
         }
         if ($this->_directiveParams['area'] != $this->_appState->getAreaCode()) {
-            return $this->_appState->emulateAreaCode(
+            $value = $this->_appState->emulateAreaCode(
                 $this->_directiveParams['area'],
                 [$this, 'emulateAreaCallback']
             );
         } else {
-            return $this->emulateAreaCallback();
+            $value = $this->emulateAreaCallback();
         }
+
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
     }
 
     /**
@@ -520,8 +525,9 @@ class Filter extends Template
     public function viewDirective($construction)
     {
         $params = $this->getParameters($construction[2]);
-        $url = $this->_assetRepo->getUrlWithParams($params['url'], $params);
-        return $url;
+        $value = $this->_assetRepo->getUrlWithParams($params['url'], $params);
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
     }
 
     /**
@@ -534,8 +540,10 @@ class Filter extends Template
     {
         // phpcs:disable Magento2.Functions.DiscouragedFunction
         $params = $this->getParameters(html_entity_decode($construction[2], ENT_QUOTES));
-        return $this->_storeManager->getStore()
-            ->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . $params['url'];
+        $value = $this->_storeManager->getStore()
+                ->getBaseUrl(UrlInterface::URL_TYPE_MEDIA) . $params['url'];
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
     }
 
     /**
@@ -580,7 +588,9 @@ class Filter extends Template
         $this->urlModel->setScope($this->_storeManager->getStore());
         $params['_escape_params'] = $this->_storeManager->getStore()->getCode();
 
-        return $this->urlModel->getUrl($path, $params);
+        $value = $this->urlModel->getUrl($path, $params);
+        $value = str_replace('{{', '&#7b;{', $value);
+        return $value;
     }
 
     /**
@@ -618,7 +628,9 @@ class Filter extends Template
         }
 
         $text = __($text, $params)->render();
-        return $this->applyModifiers($text, $modifiers);
+        $result =  $this->applyModifiers($text, $modifiers);
+        $result = str_replace('{{', '&#7b;{', $result);
+        return $result;
     }
 
     /**
@@ -784,8 +796,8 @@ class Filter extends Template
             }
             return $params['http'];
         }
-
-        return $protocol;
+        $value = str_replace('{{', '&#7b;{', $protocol);
+        return $value;
     }
 
     /**
@@ -848,6 +860,7 @@ class Filter extends Template
                     $configValue;
             }
         }
+        $configValue = str_replace('{{', '&#7b;{', $configValue);
         return $configValue;
     }
 
@@ -889,7 +902,8 @@ class Filter extends Template
                 $customVarValue = $value;
             }
         }
-        return $customVarValue;
+        $value = str_replace('{{', '&#7b;{', $customVarValue);
+        return $value;
     }
 
     /**

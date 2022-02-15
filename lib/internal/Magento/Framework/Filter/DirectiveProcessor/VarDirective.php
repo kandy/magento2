@@ -54,7 +54,7 @@ class VarDirective implements DirectiveProcessorInterface
         if (isset($construction['filters']) && strpos($construction['filters'], '|') !== false) {
             $result = $this->filterApplier->applyFromRawParam($construction['filters'], $result);
         }
-
+        $result = str_replace('{{', '&#7b;{', $result);
         return $result;
     }
 
