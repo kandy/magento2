@@ -254,6 +254,11 @@
             <stringProp name="Argument.value">${__P(admin_browse_product_filter_text,Product)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="admin_token" elementType="Argument">
+            <stringProp name="Argument.name">admin_token</stringProp>
+            <stringProp name="Argument.value">${__P(admin_token,admin_token)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="admin_users_distribution_per_admin_pool" elementType="Argument">
             <stringProp name="Argument.name">admin_users_distribution_per_admin_pool</stringProp>
             <stringProp name="Argument.value">${__P(admin_users_distribution_per_admin_pool,1)}</stringProp>
