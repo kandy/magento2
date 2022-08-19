@@ -52,22 +52,26 @@ class SchemaGenerator implements SchemaGeneratorInterface
      */
     public function generate() : Schema
     {
-        $schema = $this->schemaFactory->create(
-            [
-                'query' => $this->typeRegistry->get('Query'),
-                'mutation' => $this->typeRegistry->get('Mutation'),
-                'typeLoader' => function ($name) {
-                    return $this->typeRegistry->get($name);
-                },
-                'types' => function () {
-                    $typesImplementors = [];
-                    foreach ($this->config->getDeclaredTypes() as $type) {
-                        $typesImplementors [] = $this->typeRegistry->get($type['name']);
+        static $schema = null;
+        if (!$schema) {
+            $schema = $this->schemaFactory->create(
+                [
+                    'query' => $this->typeRegistry->get('Query'),
+                    'mutation' => $this->typeRegistry->get('Mutation'),
+                    'typeLoader' => function ($name) {
+                        return $this->typeRegistry->get($name);
+                    },
+                    'types' => function () {
+                        $typesImplementors = [];
+                        foreach ($this->config->getDeclaredTypes() as $type) {
+                            $typesImplementors [] = $this->typeRegistry->get($type['name']);
+                        }
+                        return $typesImplementors;
                     }
-                    return $typesImplementors;
-                }
-            ]
-        );
+                ]
+            );
+        }
+
         return $schema;
     }
 }

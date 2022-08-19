@@ -54,10 +54,7 @@ class SwooleApplication  extends \Magento\Framework\App\Http
      */
     public function launch()
     {
-//
-        //        $this->_state->setAreaCode('frontend');
         /** @var \Magento\Framework\App\FrontControllerInterface $frontController */
-        //$this->_objectManager->get('Magento\Theme\Model\View\Design')->
         $frontController = $this->_objectManager->create(\Magento\Framework\App\FrontControllerInterface::class);
         $result = $frontController->dispatch($this->_request);
         // TODO: Temporary solution until all controllers return ResultInterface (MAGETWO-28359)

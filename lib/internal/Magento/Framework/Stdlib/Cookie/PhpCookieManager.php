@@ -140,18 +140,20 @@ class PhpCookieManager implements CookieManagerInterface
 
         $this->checkAbilityToSendCookie($name, $value);
 
-        $phpSetcookieSuccess = setcookie(
-            $name,
-            $value,
-            [
-                'expires' => $expire,
-                'path' => $this->extractValue(CookieMetadata::KEY_PATH, $metadataArray, ''),
-                'domain' => $this->extractValue(CookieMetadata::KEY_DOMAIN, $metadataArray, ''),
-                'secure' => $this->extractValue(CookieMetadata::KEY_SECURE, $metadataArray, false),
-                'httponly' => $this->extractValue(CookieMetadata::KEY_HTTP_ONLY, $metadataArray, false),
-                'samesite' => $this->extractValue(CookieMetadata::KEY_SAME_SITE, $metadataArray, 'Lax')
-            ]
-        );
+        //todo: set cookies in recponse
+        $phpSetcookieSuccess = true;
+//        $phpSetcookieSuccess = setcookie(
+//            $name,
+//            $value,
+//            [
+//                'expires' => $expire,
+//                'path' => $this->extractValue(CookieMetadata::KEY_PATH, $metadataArray, ''),
+//                'domain' => $this->extractValue(CookieMetadata::KEY_DOMAIN, $metadataArray, ''),
+//                'secure' => $this->extractValue(CookieMetadata::KEY_SECURE, $metadataArray, false),
+//                'httponly' => $this->extractValue(CookieMetadata::KEY_HTTP_ONLY, $metadataArray, false),
+//                'samesite' => $this->extractValue(CookieMetadata::KEY_SAME_SITE, $metadataArray, 'Lax')
+//            ]
+//        );
 
         if (!$phpSetcookieSuccess) {
             $params['name'] = $name;

@@ -5,12 +5,13 @@
  */
 declare(strict_types=1);
 
-namespace Magento\Framework\GraphQl;
+namespace Magento\ApplicationServer\GraphQl;
 
 use Magento\Framework\Config\DataInterface;
 use Magento\Framework\GraphQl\Config\ConfigElementFactoryInterface;
 use Magento\Framework\GraphQl\Config\ConfigElementInterface;
-use Magento\Framework\GraphQl\Query\Fields as QueryFields;
+use Magento\Framework\GraphQl\ConfigInterface;
+use Magento\Framework\GraphQl\Query\Fields;
 
 /**
  * Provides access to typing information for a configured GraphQL schema.
@@ -28,19 +29,19 @@ class Config implements ConfigInterface
     private $configElementFactory;
 
     /**
-     * @var QueryFields
+     * @var Fields
      */
     private $queryFields;
 
     /**
      * @param DataInterface $data
      * @param ConfigElementFactoryInterface $configElementFactory
-     * @param QueryFields $queryFields
+     * @param Fields $queryFields
      */
     public function __construct(
         DataInterface $data,
         ConfigElementFactoryInterface $configElementFactory,
-        QueryFields $queryFields
+        Fields $queryFields
     ) {
         $this->configData = $data;
         $this->configElementFactory = $configElementFactory;
@@ -58,15 +59,6 @@ class Config implements ConfigInterface
                 sprintf('Config element "%s" is not declared in GraphQL schema', $configElementName)
             );
         }
-
-        $fieldsInQuery = $this->queryFields->getFieldsUsedInQuery();
-//        if (isset($data['fields'])) {
-//            if (!empty($fieldsInQuery)) {
-//                $data['fieldsInQuery'] = array_intersect_key($data['fields'], $fieldsInQuery);
-//                ksort($data['fieldsInQuery']);
-//            }
-//            ksort($data['fields']);
-//        }
 
         return $this->configElementFactory->createFromConfigData($data);
     }
