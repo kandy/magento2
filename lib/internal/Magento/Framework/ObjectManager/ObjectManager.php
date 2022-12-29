@@ -24,7 +24,7 @@ class ObjectManager implements \Magento\Framework\ObjectManagerInterface
      *
      * @var array
      */
-    public $_sharedInstances = [];
+    protected $_sharedInstances = [];
 
     /**
      * @var ConfigInterface

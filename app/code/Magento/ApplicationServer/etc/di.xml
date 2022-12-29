@@ -7,4 +7,12 @@
             <argument name="data" xsi:type="object">Magento\Framework\GraphQl\Config\Data</argument>
         </arguments>
     </type>
+
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="serverStartCommand" xsi:type="object">Magento\ApplicationServer\Console\ServerStartCommand</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

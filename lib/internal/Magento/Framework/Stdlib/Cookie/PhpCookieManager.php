@@ -140,7 +140,7 @@ class PhpCookieManager implements CookieManagerInterface
 
         $this->checkAbilityToSendCookie($name, $value);
 
-        //todo: set cookies in recponse
+        //todo: set cookies in response
         $phpSetcookieSuccess = true;
 //        $phpSetcookieSuccess = setcookie(
 //            $name,

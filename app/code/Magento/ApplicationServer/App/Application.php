@@ -3,12 +3,10 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\Framework\App\Http;
+namespace Magento\ApplicationServer\App;
 
 use Magento\Framework\App\AreaList;
 use Magento\Framework\App\ExceptionHandlerInterface;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\App\Request\Http as RequestHttp;
 use Magento\Framework\App\Response\Http as ResponseHttp;
 use Magento\Framework\App\Response\HttpInterface;
 use Magento\Framework\App\ResponseInterface;
@@ -20,18 +18,18 @@ use Magento\Framework\ObjectManager\ConfigLoaderInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Registry;
 
-class SwooleApplication  extends \Magento\Framework\App\Http
+class Application  extends \Magento\Framework\App\Http
 {
     public function __construct(
-        ObjectManagerInterface $objectManager,
-        Manager $eventManager,
-        AreaList $areaList,
-        \Magento\Framework\App\Http\Swoole\Request $request,
-        ResponseHttp $response,
-        ConfigLoaderInterface $configLoader,
-        State $state,
-        Registry $registry,
-        ExceptionHandlerInterface $exceptionHandler = null
+        ObjectManagerInterface                 $objectManager,
+        Manager                                $eventManager,
+        AreaList                               $areaList,
+        \Magento\ApplicationServer\App\Request $request,
+        ResponseHttp                           $response,
+        ConfigLoaderInterface                  $configLoader,
+        State                                  $state,
+        Registry                               $registry,
+        ExceptionHandlerInterface              $exceptionHandler = null
     ) {
         parent::__construct(
             $objectManager,
