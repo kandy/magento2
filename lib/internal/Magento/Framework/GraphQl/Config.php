@@ -60,13 +60,13 @@ class Config implements ConfigInterface
         }
 
         $fieldsInQuery = $this->queryFields->getFieldsUsedInQuery();
-//        if (isset($data['fields'])) {
-//            if (!empty($fieldsInQuery)) {
-//                $data['fieldsInQuery'] = array_intersect_key($data['fields'], $fieldsInQuery);
-//                ksort($data['fieldsInQuery']);
-//            }
-//            ksort($data['fields']);
-//        }
+        if (isset($data['fields'])) {
+            if (!empty($fieldsInQuery)) {
+                $data['fieldsInQuery'] = array_intersect_key($data['fields'], $fieldsInQuery);
+                ksort($data['fieldsInQuery']);
+            }
+            ksort($data['fields']);
+        }
 
         return $this->configElementFactory->createFromConfigData($data);
     }

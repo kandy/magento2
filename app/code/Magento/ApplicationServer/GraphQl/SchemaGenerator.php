@@ -5,10 +5,11 @@
  */
 declare(strict_types=1);
 
-namespace Magento\Framework\GraphQl\Schema;
+namespace Magento\ApplicationServer\GraphQl;
 
 use Magento\Framework\GraphQl\ConfigInterface;
 use Magento\Framework\GraphQl\Schema;
+use Magento\Framework\GraphQl\Schema\SchemaGeneratorInterface;
 use Magento\Framework\GraphQl\Schema\Type\TypeRegistry;
 use Magento\Framework\GraphQl\SchemaFactory;
 
@@ -52,22 +53,26 @@ class SchemaGenerator implements SchemaGeneratorInterface
      */
     public function generate() : Schema
     {
-        $schema = $this->schemaFactory->create(
-            [
-                'query' => $this->typeRegistry->get('Query'),
-                'mutation' => $this->typeRegistry->get('Mutation'),
-                'typeLoader' => function ($name) {
-                    return $this->typeRegistry->get($name);
-                },
-                'types' => function () {
-                    $typesImplementors = [];
-                    foreach ($this->config->getDeclaredTypes() as $type) {
-                        $typesImplementors [] = $this->typeRegistry->get($type['name']);
+        static $schema = null;
+        if (!$schema) {
+            $schema = $this->schemaFactory->create(
+                [
+                    'query' => $this->typeRegistry->get('Query'),
+                    'mutation' => $this->typeRegistry->get('Mutation'),
+                    'typeLoader' => function ($name) {
+                        return $this->typeRegistry->get($name);
+                    },
+                    'types' => function () {
+                        $typesImplementors = [];
+                        foreach ($this->config->getDeclaredTypes() as $type) {
+                            $typesImplementors [] = $this->typeRegistry->get($type['name']);
+                        }
+                        return $typesImplementors;
                     }
-                    return $typesImplementors;
-                }
-            ]
-        );
+                ]
+            );
+        }
+
         return $schema;
     }
 }

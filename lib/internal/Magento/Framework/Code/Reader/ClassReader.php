@@ -123,7 +123,7 @@ class ClassReader implements ClassReaderInterface
     }
 
     /**
-     * Disable show ObjectManager internals with var_dump
+     * Disable show internals with var_dump
      *
      * @see https://www.php.net/manual/en/language.oop5.magic.php#object.debuginfo
      * @return array

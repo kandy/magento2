@@ -11,14 +11,20 @@ use Magento\ApplicationServer\ObjectManager\AppObjectManager;
 use Magento\Framework\App\Bootstrap;
 use Magento\Framework\App\Http;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\App\State;
 use Magento\Framework\ObjectManager\ConfigLoaderInterface;
+use Swoole\Exception;
 use Swoole\Http\Response;
 use Swoole\Http\Server;
+use Swoole\Process;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
+use function str_starts_with;
+use const SWOOLE_LOG_WARNING;
 
 /**
  * Class StoreListCommand
@@ -30,6 +36,7 @@ class ServerStartCommand extends Command
     private const DEFAULT_PORT = 9501;
     private const OPTION_PORT = 'port';
     private const OPTION_AREA = 'area';
+
 
     /**
      * {@inheritdoc}
@@ -83,8 +90,11 @@ class ServerStartCommand extends Command
             // Server
             'reactor_num' => 1,
             'worker_num' => 1, // todo: set to number of CPU
-            'log_level' => \SWOOLE_LOG_WARNING,
+            'log_level' => SWOOLE_LOG_WARNING,
             'enable_coroutine' => false,
+
+
+            'admin_server' => false,
         ]);
 
         $bootstrap = Bootstrap::create(BP, $_SERVER);
@@ -101,11 +111,11 @@ class ServerStartCommand extends Command
             $debug(str_repeat('=', 40));
             $debug("Start server in $areaCode");
             $debug("    kill -USR1  " . $server->master_pid);
-            // listen ctrl + c
-            \Swoole\Process::signal(2, function () use ($server) {
+
+            // listen to  ctrl + c
+            Process::signal(2, function () use ($server) {
                 $server->shutdown();
             });
-
         });
 
 
@@ -114,46 +124,28 @@ class ServerStartCommand extends Command
             function (\Swoole\Http\Request $request, Response $swooleResponse)
                 use ($bootstrap, $globalObjectManager, $debug)
             {
-
                 $appRequest = new Request($request);
                 $objectManager = new AppObjectManager(
                     $globalObjectManager,
                     [
-                        \Magento\Framework\App\Request\Http::class => $appRequest
+                        \Magento\Framework\App\Request\Http::class => $appRequest,
                     ]
                 );
 
-                $uri = $request->server['request_uri'];
-                $debug($uri);
-
                 try {
-
-                    if (strpos($uri, '/static/') === 0) {
-                       $swooleResponse->sendfile(BP . $uri);
-                       return Command::SUCCESS;
-                    }
-
-                    /** @var Http $app */
                     $app = $objectManager->create(
                         Application::class,
                         [
                             'request' => $appRequest,
                         ]
                     );
-                    $response = $app->launch();
+                    $response = $app->launch($appRequest);
 
-                    if ($response->getHttpResponseCode() == 500) {
-                        $debug($response);
-                    }
-
-                    foreach ($response->getHeaders() as $header) {
-                        $swooleResponse->header($header->getFieldName(), $header->getFieldValue());
-                    }
-
-                    $swooleResponse->end($response->getContent());
-                } catch (\Throwable $t) {
+                    $this->sendResponse($response, $swooleResponse);
+                } catch (Throwable $t) {
                     $debug($t);
-                    $swooleResponse->end('Exception: ' . $t);
+                    $swooleResponse->status(500, 'Exception: ' . $t);
+                    $swooleResponse->end();
                 } finally {
                     ObjectManager::setInstance($globalObjectManager);
                 }
@@ -161,8 +153,31 @@ class ServerStartCommand extends Command
             }
         );
 
-        $server->start();
+        try {
+            $server->start();
+        } catch (Exception $e) {
+            $debug('Application is stopped');
+        }
 
         return Command::SUCCESS;
+    }
+
+
+    /**
+     * @param HttpResponse $response
+     * @param Response $swooleResponse
+     * @return void
+     */
+    private function sendResponse(HttpResponse $response, Response $swooleResponse): void
+    {
+        if ($response->getHttpResponseCode() != 200) {
+            $swooleResponse->status($response->getHttpResponseCode(0));
+        }
+
+        foreach ($response->getHeaders() as $header) {
+            $swooleResponse->header($header->getFieldName(), $header->getFieldValue());
+        }
+
+        $swooleResponse->end($response->getContent());
     }
 }

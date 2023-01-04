@@ -18,7 +18,8 @@ class AppObjectManager extends \Magento\Framework\App\ObjectManager
      */
     private $_classesToDestruct = [
         Layout::class,
-        Registry::class
+        Registry::class,
+        Magento\Framework\App\Response\Http::class,
     ];
 
     /**
@@ -50,18 +51,19 @@ class AppObjectManager extends \Magento\Framework\App\ObjectManager
         $this->_config = $parentObjectManager->get(ConfigInterface::class);
 
         $getParentInstances = (fn ($om) => $om->_sharedInstances)->bindTo($parentObjectManager);
-        $this->persistedInstances = $getParentInstances($parentObjectManager);
-        unset($this->persistedInstances[ObjectManagerInterface::class]);
 
-       // var_dump(array_keys( $this->persistedInstances));
+        $this->persistedInstance = $getParentInstances($parentObjectManager);
 
-        $factory = clone $parentObjectManager->get(FactoryInterface::class);
+        $getFactory = (fn ($om) => $om->_factory)->bindTo($parentObjectManager);
+
+        $factory = clone $getFactory($parentObjectManager);
         $factory->setObjectManager($this);
         $this->_factory = $factory;
 
+
         $this->_sharedInstances = $sharedInstances;
         $this->_sharedInstances[ObjectManagerInterface::class] = $this;
-
+        $this->persistedInstances[ObjectManagerInterface::class] = $this;
         self::setInstance($this);
     }
 
@@ -80,10 +82,16 @@ class AppObjectManager extends \Magento\Framework\App\ObjectManager
             }
             $this->_sharedInstances[$type] = $this->_factory->create($type);
         }
+
         return $this->_sharedInstances[$type];
     }
 
 
+    /**
+     * Get list of services requested from OM
+     *
+     * @return array
+     */
     public function getServiceList(): array
     {
         return array_keys($this->_sharedInstances);
