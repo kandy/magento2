@@ -52,7 +52,7 @@ class AppObjectManager extends \Magento\Framework\App\ObjectManager
 
         $getParentInstances = (fn ($om) => $om->_sharedInstances)->bindTo($parentObjectManager);
 
-        $this->persistedInstance = $getParentInstances($parentObjectManager);
+        $this->persistedInstances = $getParentInstances($parentObjectManager);
 
         $getFactory = (fn ($om) => $om->_factory)->bindTo($parentObjectManager);
 
@@ -63,7 +63,10 @@ class AppObjectManager extends \Magento\Framework\App\ObjectManager
 
         $this->_sharedInstances = $sharedInstances;
         $this->_sharedInstances[ObjectManagerInterface::class] = $this;
-        $this->persistedInstances[ObjectManagerInterface::class] = $this;
+        $this->_sharedInstances[ConfigInterface::class] = $this->_config;
+        $this->_sharedInstances[FactoryInterface::class] = $factory;
+        unset($this->persistedInstances[ObjectManagerInterface::class]);
+       // $this->persistedInstances[ObjectManagerInterface::class] = $this;
         self::setInstance($this);
     }
 

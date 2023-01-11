@@ -9,12 +9,10 @@ use Magento\ApplicationServer\App\Request;
 use Magento\ApplicationServer\App\Application;
 use Magento\ApplicationServer\ObjectManager\AppObjectManager;
 use Magento\Framework\App\Bootstrap;
-use Magento\Framework\App\Http;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\App\State;
 use Magento\Framework\ObjectManager\ConfigLoaderInterface;
-use Swoole\Exception;
 use Swoole\Http\Response;
 use Swoole\Http\Server;
 use Swoole\Process;
@@ -22,9 +20,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Throwable;
-use function str_starts_with;
-use const SWOOLE_LOG_WARNING;
+
 
 /**
  * Class StoreListCommand
@@ -88,9 +84,9 @@ class ServerStartCommand extends Command
             'daemonize' => 0,
             'open_cpu_affinity' => true,
             // Server
-            'reactor_num' => 1,
-            'worker_num' => 1, // todo: set to number of CPU
-            'log_level' => SWOOLE_LOG_WARNING,
+            'reactor_num' => 8,
+            'worker_num' => 8, // todo: set to number of CPU
+            'log_level' => \SWOOLE_LOG_WARNING,
             'enable_coroutine' => false,
 
 
@@ -107,10 +103,12 @@ class ServerStartCommand extends Command
         );
         $globalObjectManager->get(State::class)->setAreaCode($areaCode);
 
+
         $server->on("start", function (Server $server) use ($areaCode, $debug) {
             $debug(str_repeat('=', 40));
-            $debug("Start server in $areaCode");
-            $debug("    kill -USR1  " . $server->master_pid);
+            $debug("Start server in $areaCode area");
+            $debug("    kill -9  " . $server->master_pid);
+            $debug(str_repeat('=', 40));
 
             // listen to  ctrl + c
             Process::signal(2, function () use ($server) {
@@ -131,7 +129,6 @@ class ServerStartCommand extends Command
                         \Magento\Framework\App\Request\Http::class => $appRequest,
                     ]
                 );
-
                 try {
                     $app = $objectManager->create(
                         Application::class,
@@ -140,12 +137,11 @@ class ServerStartCommand extends Command
                         ]
                     );
                     $response = $app->launch($appRequest);
-
                     $this->sendResponse($response, $swooleResponse);
-                } catch (Throwable $t) {
+                } catch (\Throwable $t) {
                     $debug($t);
-                    $swooleResponse->status(500, 'Exception: ' . $t);
-                    $swooleResponse->end();
+                    $swooleResponse->status(500, 'Server Error');
+                    $swooleResponse->end('Exception: ' . $t);
                 } finally {
                     ObjectManager::setInstance($globalObjectManager);
                 }
@@ -155,7 +151,7 @@ class ServerStartCommand extends Command
 
         try {
             $server->start();
-        } catch (Exception $e) {
+        } catch (\Swoole\ExitException $e) {
             $debug('Application is stopped');
         }
 
@@ -171,7 +167,7 @@ class ServerStartCommand extends Command
     private function sendResponse(HttpResponse $response, Response $swooleResponse): void
     {
         if ($response->getHttpResponseCode() != 200) {
-            $swooleResponse->status($response->getHttpResponseCode(0));
+            $swooleResponse->status($response->getHttpResponseCode());
         }
 
         foreach ($response->getHeaders() as $header) {

@@ -60,9 +60,4 @@ class Syslog extends \Magento\Framework\Logger\Handler\Syslog
         $configValue = $this->deploymentConfig->get(ConfigOptionsList::CONFIG_PATH_SYSLOG_LOGGING);
         return (bool)$configValue;
     }
-
-    public function __debugInfo()
-    {
-        return [];
-    }
 }
